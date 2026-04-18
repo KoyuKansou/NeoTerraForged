@@ -11,6 +11,8 @@ This port was used generative AI for assistance
 
 Currently only support and tested on fabric, forge is NOT SUPPORTED IN THIS PORT 
 
+Mod may break with custom preset
+
 pull request to fix or improve is welcomed
 
 fix the placeholder text of the mod GUI
