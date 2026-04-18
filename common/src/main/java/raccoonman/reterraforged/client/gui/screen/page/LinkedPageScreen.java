@@ -68,7 +68,7 @@ public abstract class LinkedPageScreen extends Screen {
 
 	@Override
 	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		super.renderBackground(guiGraphics, mouseY, mouseY, partialTicks);
+		//super.renderBackground(guiGraphics, mouseY, mouseY, partialTicks);
 		super.render(guiGraphics, mouseX, mouseY, partialTicks);
 	}
 	
@@ -80,6 +80,11 @@ public abstract class LinkedPageScreen extends Screen {
 	public void onDone() {
 		this.currentPage.onDone();
 	}
+	
+
+    public void addPageWidget(net.minecraft.client.gui.components.AbstractWidget widget) {
+        this.addRenderableWidget(widget);
+    }
 	
 	public interface Page {
 		Component title();

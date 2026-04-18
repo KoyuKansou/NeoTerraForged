@@ -15,7 +15,8 @@ import com.mojang.datafixers.DataFixer;
 
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.progress.ChunkProgressListener;
+//import net.minecraft.server.level.ChunkStatusUpdateListener;
+// ^ broke on 1.21.11 somehow (KoyuKansou)
 import net.minecraft.util.thread.BlockableEventLoop;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.chunk.LightChunkGetter;
@@ -31,12 +32,12 @@ public class MixinChunkMap {
 	@Final
 	@Shadow
     private RandomState randomState;
-	
+
 	@Inject(
 		at = @At("TAIL"),
 		method = "<init>"
 	)
-	public void ChunkMap(ServerLevel serverLevel, LevelStorageSource.LevelStorageAccess levelStorageAccess, DataFixer dataFixer, StructureTemplateManager structureTemplateManager, Executor executor, BlockableEventLoop blockableEventLoop, LightChunkGetter lightChunkGetter, ChunkGenerator chunkGenerator, ChunkProgressListener chunkProgressListener, ChunkStatusUpdateListener chunkStatusUpdateListener, Supplier supplier, TicketStorage ticketStorage, int i, boolean bl, CallbackInfo ci) {
+	public void ChunkMap(ServerLevel serverLevel, LevelStorageSource.LevelStorageAccess levelStorageAccess, DataFixer dataFixer, StructureTemplateManager structureTemplateManager, Executor executor, BlockableEventLoop blockableEventLoop, LightChunkGetter lightChunkGetter, ChunkGenerator chunkGenerator, ChunkStatusUpdateListener chunkStatusUpdateListener, Supplier supplier, TicketStorage ticketStorage, int i, boolean bl, CallbackInfo ci) {
 		if((Object) this.randomState instanceof RTFRandomState rtfRandomState) {
 			rtfRandomState.initialize(serverLevel.registryAccess());
 		}

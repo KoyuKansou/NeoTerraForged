@@ -23,6 +23,8 @@ import raccoonman.reterraforged.world.worldgen.biome.modifier.Filter;
 import raccoonman.reterraforged.world.worldgen.biome.modifier.Order;
 
 //TODO organize all of this stuff cause god damn
+
+//gawd damn (KoyuKansou)
 public class PresetBiomeModifierData {
 	public static final ResourceKey<BiomeModifier> ADD_EROSION = createKey("add_erosion");
 	public static final ResourceKey<BiomeModifier> ADD_SNOW_PROCESSING = createKey("add_snow_processing");

@@ -5,6 +5,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import net.minecraft.server.level.progress.LevelLoadListener;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -19,16 +20,30 @@ import raccoonman.reterraforged.world.worldgen.biome.RTFClimateSampler;
 @Mixin(MinecraftServer.class)
 class MixinMinecraftServer {
 
+//	@Inject(
+//		at = @At(
+//			value = "INVOKE",
+//			target = "Lnet/minecraft/world/level/biome/Climate$Sampler;findSpawnPosition()Lnet/minecraft/core/BlockPos;"
+//		),
+//		method = "setInitialSpawn"
+//	)
+//    private static void findSpawnPosition(ServerLevel serverLevel, ServerLevelData serverLevelData, boolean bl, boolean bl2, CallbackInfo callback) {
+//		RandomState randomState = serverLevel.getChunkSource().randomState();
+//		Climate.Sampler sampler = randomState.sampler();
+
+// ^ backup just in case
 	@Inject(
-		at = @At(
-			value = "INVOKE",
-			target = "Lnet/minecraft/world/level/biome/Climate$Sampler;findSpawnPosition()Lnet/minecraft/core/BlockPos;"
-		),
-		method = "setInitialSpawn"
-	)
-    private static void findSpawnPosition(ServerLevel serverLevel, ServerLevelData serverLevelData, boolean bl, boolean bl2, CallbackInfo callback) {
-		RandomState randomState = serverLevel.getChunkSource().randomState();
-		Climate.Sampler sampler = randomState.sampler();
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/world/level/biome/Climate$Sampler;findSpawnPosition()Lnet/minecraft/core/BlockPos;"
+        ),
+        method = "setInitialSpawn"
+    )
+    private static void findSpawnPosition(ServerLevel serverLevel, ServerLevelData serverLevelData, boolean bl, boolean bl2, LevelLoadListener levelLoadListener, CallbackInfo ci) {
+        
+        RandomState randomState = serverLevel.getChunkSource().randomState();
+        Climate.Sampler sampler = randomState.sampler();
+        
 		serverLevel.registryAccess().lookup(RTFRegistries.PRESET).flatMap((registry) -> {
 			return registry.get(Preset.KEY);
 		}).ifPresent((preset) -> {

@@ -36,8 +36,7 @@ public class WidgetList<T extends AbstractWidget> extends ContainerObjectSelecti
     	this.renderSelected = renderSelected;
     }
 
-    @Override
-    protected boolean isSelectedItem(int i) {
+    public boolean isSelectedItem(int i) {
         return this.renderSelected && Objects.equals(this.getSelected(), this.children().get(i));
     }
 
@@ -68,7 +67,12 @@ public class WidgetList<T extends AbstractWidget> extends ContainerObjectSelecti
         }
 
         @Override
-        public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovered, float partialTicks) {
+        public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovered, float partialTicks) {
+            // this shit took me so much time when doing manually
+            int left = this.getX();
+            int top = this.getY();
+            int width = this.getWidth();
+            int height = this.getHeight();
             int optionWidth = Math.min(396, width);
             int padding = (width - optionWidth) / 2;
             widget.setX(left + padding);

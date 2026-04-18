@@ -1,7 +1,5 @@
 package raccoonman.reterraforged.world.worldgen.biome.modifier.fabric;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -16,7 +14,6 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.biome.BiomeGenerationSettings;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 
@@ -33,25 +30,21 @@ record ReplaceModifier(GenerationStep.Decoration step, Optional<HolderSet<Biome>
 			return;
 		}
 		
-		BiomeGenerationSettings generationSettings = selectionContext.getBiome().getGenerationSettings();
-		List<HolderSet<PlacedFeature>> featureSteps = generationSettings.features();
-		int index = this.step.ordinal();
-
-		while (index >= featureSteps.size()) {
-			featureSteps.add(HolderSet.direct());
-		}
-
-		featureSteps.set(index, this.replace(featureSteps.get(index)));
+		BiomeModificationContext.GenerationSettingsContext genSettings = modificationContext.getGenerationSettings();
 		
-		this.rebuildFlowerFeatures(generationSettings);
-	}
-	
-	private HolderSet<PlacedFeature> replace(HolderSet<PlacedFeature> features) {
-		List<Holder<PlacedFeature>> newList = new ArrayList<>(features.stream().toList());
-		newList.replaceAll((f) -> {
-			return f.unwrapKey().map(this.replacements::get).orElse(f);
-		});
-		return HolderSet.direct(newList);
+		for (Map.Entry<ResourceKey<PlacedFeature>, Holder<PlacedFeature>> entry : this.replacements.entrySet()) {
+			ResourceKey<PlacedFeature> oldKey = entry.getKey();
+			Holder<PlacedFeature> newHolder = entry.getValue();
+		
+			genSettings.removeFeature(this.step, oldKey);
+			
+
+			Optional<ResourceKey<PlacedFeature>> newKey = newHolder.unwrapKey();
+			if (newKey.isPresent()) {
+				genSettings.addFeature(this.step, newKey.get());
+			}
+
+		}
 	}
 
 	@Override

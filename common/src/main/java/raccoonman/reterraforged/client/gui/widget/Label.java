@@ -2,7 +2,6 @@ package raccoonman.reterraforged.client.gui.widget;
 
 import java.util.function.Supplier;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.sounds.SoundManager;
@@ -23,8 +22,9 @@ public class Label extends Button {
     }
 
 	@Override
-	public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-		Minecraft minecraft = Minecraft.getInstance();
-        graphics.drawString(minecraft.font, this.getMessage(), this.getX(), this.getY() + (this.height - 8) / 2, 0xFFFFFF);
+	public void renderContents(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+		// 1.21.11: renderWidget() no longer draws the background; renderContents must do it
+		this.renderDefaultSprite(guiGraphics);
+		this.renderDefaultLabel(guiGraphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE));
 	}
 }

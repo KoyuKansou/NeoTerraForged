@@ -1,18 +1,15 @@
 package raccoonman.reterraforged.world.worldgen.biome.modifier.fabric;
 
-import java.util.List;
 import java.util.Optional;
 
 import com.mojang.serialization.MapCodec;
-import org.jetbrains.annotations.Nullable;
-
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.fabricmc.fabric.api.biome.v1.BiomeModificationContext;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectionContext;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
-import net.minecraft.world.level.biome.BiomeGenerationSettings;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import raccoonman.reterraforged.world.worldgen.biome.modifier.Filter;
@@ -36,22 +33,14 @@ record AddModifier(Order order, GenerationStep.Decoration step, Optional<Filter>
 		if(this.biomes.isPresent() && !this.biomes.get().test(selectionContext.getBiomeRegistryEntry())) {
 			return;
 		}
-		
-		BiomeGenerationSettings generationSettings = selectionContext.getBiome().getGenerationSettings();
-		List<HolderSet<PlacedFeature>> featureSteps = generationSettings.features();
-		int index = this.step.ordinal();
 
-		while (index >= featureSteps.size()) {
-			featureSteps.add(HolderSet.direct());
+		BiomeModificationContext.GenerationSettingsContext genSettings = modificationContext.getGenerationSettings();
+		
+		for (Holder<PlacedFeature> holder : this.features) {
+			Optional<ResourceKey<PlacedFeature>> key = holder.unwrapKey();
+			if (key.isPresent()) {
+				genSettings.addFeature(this.step, key.get());
+			}
 		}
-
-		featureSteps.set(index, this.add(featureSteps.get(index)));
-		
-		this.rebuildFlowerFeatures(generationSettings);
-	}
-
-	private HolderSet<PlacedFeature> add(@Nullable HolderSet<PlacedFeature> values) {
-		if (values == null) return this.features;
-		return HolderSet.direct(this.order.add(values.stream().toList(), this.features.stream().toList()));
 	}
 }
