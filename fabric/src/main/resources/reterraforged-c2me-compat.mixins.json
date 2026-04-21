@@ -1,0 +1,14 @@
+{
+  "required": false,
+  "plugin": "raccoonman.reterraforged.compat.c2me.mixin.plugin.C2MECompatMixinPlugin",
+  "package": "raccoonman.reterraforged.compat.c2me.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "MixinMcToAst",
+    "MixinC2MEConfig",
+    "MixinCLDataUtil"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

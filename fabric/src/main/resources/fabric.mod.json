@@ -30,7 +30,8 @@
   },
   "mixins": [
     "reterraforged-common.mixins.json",
-    "reterraforged-fabric.mixins.json"
+    "reterraforged-fabric.mixins.json",
+    "reterraforged-c2me-compat.mixins.json"
   ],
   "icon": "assets/reterraforged/icon.png"
 }

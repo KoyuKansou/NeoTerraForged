@@ -32,6 +32,7 @@ import raccoonman.reterraforged.registries.RTFRegistries;
 import raccoonman.reterraforged.tags.RTFDensityFunctionTags;
 import raccoonman.reterraforged.world.worldgen.GeneratorContext;
 import raccoonman.reterraforged.world.worldgen.RTFRandomState;
+import raccoonman.reterraforged.world.worldgen.RTFWorldLookupHolder;
 import raccoonman.reterraforged.world.worldgen.densityfunction.CellSampler;
 import raccoonman.reterraforged.world.worldgen.densityfunction.NoiseFunction;
 import raccoonman.reterraforged.world.worldgen.noise.module.Noise;
@@ -114,6 +115,7 @@ class MixinRandomState {
 					.resultOrPartial(RTFCommon.LOGGER::error)
 					.orElseGet(PerformanceConfig::makeDefault);
 				this.generatorContext = GeneratorContext.makeCached(this.preset, noises, (int) this.seed, config.tileSize(), config.batchCount(), ThreadPools.availableProcessors() > 4);
+				RTFWorldLookupHolder.set(this.generatorContext);
 			}
 		}, () -> {
 			if(this.hasContext) {
