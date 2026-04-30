@@ -147,7 +147,6 @@ public class Presets {
 		); 
 	}
 	
-	//TODO make mushroom islands bigger
 	public static Preset makeLegacyBeautiful() {
 		return new Preset(
 			new WorldSettings(

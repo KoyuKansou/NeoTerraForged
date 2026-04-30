@@ -11,7 +11,8 @@ import org.joml.Matrix3x2fStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.ActiveTextCollector;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
@@ -50,17 +51,17 @@ public abstract class PresetEditorPage extends BisectedPage<PresetConfigScreen, 
 	private ValueButton<Integer> seed;
 	private Preview preview;
 	protected PresetEntry preset;
-	
+
 	public PresetEditorPage(PresetConfigScreen screen, PresetEntry preset) {
 		super(screen);
-		
+
 		this.preset = preset;
 	}
-	
+
 	protected void regenerate() {
 		this.preview.regenerate();
 	}
-	
+
 	@Override
 	public void init() {
 		super.init();
@@ -93,11 +94,11 @@ public abstract class PresetEditorPage extends BisectedPage<PresetConfigScreen, 
 		this.right.addWidget(this.seed);
 		this.right.addWidget(this.preview);
 	}
-	
+
 	@Override
 	public void onClose() {
 		super.onClose();
-	
+
 		try {
 			this.preset.save();
 			this.preview.close();
@@ -105,18 +106,18 @@ public abstract class PresetEditorPage extends BisectedPage<PresetConfigScreen, 
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public void onDone() {
 		super.onDone();
-		
+
 		try {
 			this.screen.applyPreset(this.preset);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public class Preview extends Button {
 	    private static final int FACTOR = 4;
 	    public static final int SIZE = (1 << 4) << FACTOR;
@@ -125,25 +126,25 @@ public abstract class PresetEditorPage extends BisectedPage<PresetConfigScreen, 
 		private Identifier textureId = Identifier.withDefaultNamespace(RTFCommon.MOD_ID + "-preview-framebuffer");
 	    private Tile tile;
 	    private int centerX, centerZ;
-	    
+
 	    private String hoveredCoords = "";
 	    //TODO maybe make this a map or something instead?
 	    private String[] legendValues = {"", "", ""};
 	    private Component[] legendLabels = { Component.translatable(RTFTranslationKeys.GUI_LABEL_PREVIEW_AREA), Component.translatable(RTFTranslationKeys.GUI_LABEL_PREVIEW_TERRAIN), Component.translatable(RTFTranslationKeys.GUI_LABEL_PREVIEW_BIOME) };
-	    
+
 	    private int offsetX, offsetZ;
 
 	    public Preview() {
 	        super(-1, -1, -1, -1, CommonComponents.EMPTY, (b) -> {
-		    	System.out.println("clicked");
-	        	Minecraft mc = Minecraft.getInstance();
-	        	MouseHandler mouse = mc.mouseHandler;
-	        	if(b instanceof Preview self) {
+			System.out.println("clicked");
+		Minecraft mc = Minecraft.getInstance();
+		MouseHandler mouse = mc.mouseHandler;
+		if(b instanceof Preview self) {
 			        if (self.updateLegend((int) mouse.xpos(), (int) mouse.ypos()) && !self.hoveredCoords.isEmpty()) {
 			            self.playDownSound(Minecraft.getInstance().getSoundManager());
 			            PresetEditorPage.this.screen.minecraft.keyboardHandler.setClipboard(self.hoveredCoords);
 			        }
-	        	}
+		}
 	        }, DEFAULT_NARRATION);
 
             Minecraft.getInstance().getTextureManager().register(this.textureId, this.texture);
@@ -158,7 +159,7 @@ public abstract class PresetEditorPage extends BisectedPage<PresetConfigScreen, 
 	        Preset preset = presets.getOrThrow(Preset.KEY).value();
 	        WorldSettings world = preset.world();
 	        WorldSettings.Properties properties = world.properties;
-	        
+
 	        try {
 				CacheManager.clear();
 			} catch (Exception e) {
@@ -168,17 +169,17 @@ public abstract class PresetEditorPage extends BisectedPage<PresetConfigScreen, 
 				.resultOrPartial(RTFCommon.LOGGER::error)
 				.orElseGet(PerformanceConfig::makeDefault);
 	        GeneratorContext generatorContext = GeneratorContext.makeUncached(preset, noises, (int) settings.options().seed(), FACTOR, 0, config.batchCount());
-	        
+
 	        this.centerX = 0;
 	        this.centerZ = 0;
-	        
+
 	        if(preset.world().properties.spawnType == SpawnType.CONTINENT_CENTER) {
-	        	long nearestContinentCenter = generatorContext.lookup.getHeightmap().continent().getNearestCenter(this.offsetX, this.offsetZ);
-	        	this.centerX = PosUtil.unpackLeft(nearestContinentCenter);
-	        	this.centerZ = PosUtil.unpackRight(nearestContinentCenter);
+		long nearestContinentCenter = generatorContext.lookup.getHeightmap().continent().getNearestCenter(this.offsetX, this.offsetZ);
+		this.centerX = PosUtil.unpackLeft(nearestContinentCenter);
+		this.centerZ = PosUtil.unpackRight(nearestContinentCenter);
 	        } else {
-	        	this.centerX = 0;
-	        	this.centerZ = 0;
+		this.centerX = 0;
+		this.centerZ = 0;
 	        }
 
 	        this.tile = generatorContext.generator.generateZoomed(this.centerX, this.centerZ, this.getZoom(), false).join();
@@ -198,14 +199,14 @@ public abstract class PresetEditorPage extends BisectedPage<PresetConfigScreen, 
 	        });
 	        this.texture.upload();
 	    }
-	    
+
 	    private int rgbaToABGR(int rgba) {
-	    	return (0xFF) << 24 | (rgba & 0xFF0000) >> 16 | (rgba & 0xFF00) | (rgba & 0xFF) << 16;
+		return (0xFF) << 24 | (rgba & 0xFF0000) >> 16 | (rgba & 0xFF00) | (rgba & 0xFF) << 16;
 	    }
-	    
+
 	    public void close() throws Exception {
-	    	this.texture.close();
-	    	try {
+		this.texture.close();
+		try {
 				CacheManager.clear();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -213,16 +214,16 @@ public abstract class PresetEditorPage extends BisectedPage<PresetConfigScreen, 
 	    }
 
 	    @Override
-	    public void renderContents(GuiGraphics guiGraphics, int mx, int my, float partialTicks) {
-	    	int x = this.getX();
-	    	int y = this.getY();
-	    	
-	    	this.height = this.getWidth();
-			guiGraphics.blit(this.textureId, x, y, this.width, this.height, 0.0F, 0.0F, 1.0F, 1.0F);
+	    public void extractContents(GuiGraphicsExtractor guiGraphicsExtractor, int mx, int my, float partialTicks) {
+		int x = this.getX();
+		int y = this.getY();
 
-	    	this.updateLegend(mx, my);
+		this.height = this.getWidth();
+			guiGraphicsExtractor.blit(this.textureId, x, y, this.width, this.height, 0.0F, 0.0F, 1.0F, 1.0F);
 
-	    	this.renderLegend(guiGraphics, mx, my, this.legendLabels, this.legendValues, x, y + this.width, 10, 0xFFFFFF);
+		this.updateLegend(mx, my);
+
+		this.renderLegend(guiGraphicsExtractor, mx, my, this.legendLabels, this.legendValues, x, y + this.width, 10, 0xFFFFFF);
 	    }
 
 	    private boolean updateLegend(int mx, int my) {
@@ -230,7 +231,7 @@ public abstract class PresetEditorPage extends BisectedPage<PresetConfigScreen, 
 	            int left = this.getX();
 	            int top = this.getY();
 	            float size = this.width;
-	
+
 	            int zoom = this.getZoom();
 	            int width = Math.max(1, this.tile.getBlockSize().size() * zoom);
 	            int height = Math.max(1, this.tile.getBlockSize().size() * zoom);
@@ -243,14 +244,14 @@ public abstract class PresetEditorPage extends BisectedPage<PresetConfigScreen, 
 	                Cell cell = this.tile.lookup(ix, iz);
 	                this.legendValues[1] = getTerrainName(cell);
 	                this.legendValues[2] = getBiomeName(cell);
-	
+
 	                int dx = (ix - (this.tile.getBlockSize().size() / 2)) * zoom;
 	                int dz = (iz - (this.tile.getBlockSize().size() / 2)) * zoom;
-	
+
 	                this.hoveredCoords = (this.centerX + dx) + ":" + (this.centerZ + dz);
 	                return true;
 	            } else {
-	            	this.hoveredCoords = "";
+		this.hoveredCoords = "";
 	            }
 	        }
 	        return false;
@@ -267,10 +268,10 @@ public abstract class PresetEditorPage extends BisectedPage<PresetConfigScreen, 
 	        return LEGEND_SCALES[index];
 	    }
 
-	    private void renderLegend(GuiGraphics guiGraphics, int mx, int my, Component[] labels, String[] values, int left, int top, int lineHeight, int color) {
+	    private void renderLegend(GuiGraphicsExtractor guiGraphicsExtractor, int mx, int my, Component[] labels, String[] values, int left, int top, int lineHeight, int color) {
 	        float scale = this.getLegendScale();
-	        Matrix3x2fStack pose = guiGraphics.pose();
-	        	
+	        Matrix3x2fStack pose = guiGraphicsExtractor.pose();
+
 	        pose.pushMatrix();
 	        pose.translate(left + 3.75F * scale, top - lineHeight * (3.2F * scale));
 	        pose.scale(scale, scale);
@@ -284,35 +285,35 @@ public abstract class PresetEditorPage extends BisectedPage<PresetConfigScreen, 
 
 	        float maxWidth = (this.width - 4) / scale;
 	        for (int i = 0; i < labels.length && i < values.length; i++) {
-	        	Component label = labels[i];
+		Component label = labels[i];
 	            String value = values[i];
 
 	            while (value.length() > 0 && spacing + renderer.width(value) > maxWidth) {
 	                value = value.substring(0, value.length() - 1);
 	            }
 
-	            guiGraphics.drawString(renderer, label, 0, i * lineHeight, color);
-	            guiGraphics.drawString(renderer, value, spacing, i * lineHeight, color);
+	            guiGraphicsExtractor.text(renderer, label.getString(), 0, i * lineHeight, color);
+	            guiGraphicsExtractor.text(renderer, value, spacing, i * lineHeight, color);
 	        }
 
 	        pose.popMatrix();
-	
+
 	        if (!this.hoveredCoords.isEmpty()) {
-	        	guiGraphics.drawCenteredString(renderer, this.hoveredCoords, mx, my - 10, 0xFFFFFF);
+		guiGraphicsExtractor.centeredText(renderer, this.hoveredCoords, mx, my - 10, 0xFFFFFF);
 	        }
 	    }
-	
+
 	    private int getZoom() {
 	        return NoiseUtil.round(1.5F * (101 - (float) PresetEditorPage.this.zoom.getLerpedValue()));
 	    }
-	
+
 	    private static String getTerrainName(Cell cell) {
 	        if (cell.terrain.isRiver()) {
 	            return "river";
 	        }
 	        return cell.terrain.getName().toLowerCase();
 	    }
-	
+
 	    private static String getBiomeName(Cell cell) {
 	        String terrain = cell.terrain.getName().toLowerCase();
 	        if (terrain.contains("ocean")) {

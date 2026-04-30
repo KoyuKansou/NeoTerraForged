@@ -30,6 +30,7 @@ import raccoonman.reterraforged.world.worldgen.cell.Cell;
 import raccoonman.reterraforged.world.worldgen.cell.heightmap.Levels;
 import raccoonman.reterraforged.world.worldgen.cell.terrain.TerrainType;
 import raccoonman.reterraforged.world.worldgen.densityfunction.tile.Tile;
+import raccoonman.reterraforged.data.worldgen.preset.settings.SurfaceSettings;
 import raccoonman.reterraforged.world.worldgen.feature.ErodeFeature.Config;
 import raccoonman.reterraforged.world.worldgen.noise.module.Noise;
 import raccoonman.reterraforged.world.worldgen.noise.module.Noises;
@@ -48,7 +49,8 @@ public class ErodeFeature extends Feature<Config> {
 		@Nullable
 		GeneratorContext generatorContext;
 		if((Object) randomState instanceof RTFRandomState rtfRandomState && (generatorContext = rtfRandomState.generatorContext()) != null) {
-			ChunkPos chunkPos = new ChunkPos(placeContext.origin());
+			BlockPos origin = placeContext.origin();
+			ChunkPos chunkPos = new ChunkPos(origin.getX() >> 4, origin.getZ() >> 4);
 			int chunkX = chunkPos.x;
 			int chunkZ = chunkPos.z;
 			ChunkGenerator generator = placeContext.chunkGenerator();
@@ -58,6 +60,7 @@ public class ErodeFeature extends Feature<Config> {
 			Levels levels = heightmap.levels();
 			Noise rand = Noises.white(heightmap.climate().randomSeed(), 1);
 			Noise desertErosionVariance = makeDesertErosionVariance(levels);
+			SurfaceSettings.Erosion surfaceErosion = generatorContext.preset.surface().erosion();
 			BlockPos.MutableBlockPos pos = new MutableBlockPos();
 			Config config = placeContext.config();
 			for(int x = 0; x < 16; x++) {
@@ -73,7 +76,7 @@ public class ErodeFeature extends Feature<Config> {
 					pos.set(worldX, surfaceY, worldZ);
 					
 					if(biome.is(Biomes.DESERT)) {
-						erodeDesert(desertErosionVariance, levels, chunk, cell, pos, surfaceY);
+						erodeDesert(desertErosionVariance, levels, chunk, cell, pos, surfaceY, surfaceErosion.desertGradientMin, surfaceErosion.desertHeightMin, surfaceErosion.desertHeightThreshold);
 						continue;
 					}
 					
@@ -93,19 +96,16 @@ public class ErodeFeature extends Feature<Config> {
 		}
 	}
 	
-	// TODO expose this to config
-	@Deprecated(forRemoval = true)
 	private static Noise makeDesertErosionVariance(Levels levels) {
 		Noise noise = Noises.perlin(435, 8, 1);
 		return Noises.mul(noise, levels.scale(16));
 	}
 	
-	// TODO ^
-	private static void erodeDesert(Noise variance, Levels levels, ChunkAccess chunk, Cell cell, BlockPos.MutableBlockPos pos, int surfaceY) {
-		float min = levels.ground(10);
-		float threshold = levels.ground(40);
+	private static void erodeDesert(Noise variance, Levels levels, ChunkAccess chunk, Cell cell, BlockPos.MutableBlockPos pos, int surfaceY, float gradientMin, int heightMin, int heightThreshold) {
+		float min = levels.ground(heightMin);
+		float threshold = levels.ground(heightThreshold);
 
-        if (cell.gradient < 0.15F) {
+        if (cell.gradient < gradientMin) {
             return;
         }
 

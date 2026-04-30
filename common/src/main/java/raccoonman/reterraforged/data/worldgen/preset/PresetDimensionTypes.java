@@ -11,6 +11,7 @@ import net.minecraft.world.attribute.BackgroundMusic;
 import net.minecraft.world.attribute.BedRule;
 import net.minecraft.world.attribute.EnvironmentAttributeMap;
 import net.minecraft.world.attribute.EnvironmentAttributes;
+import net.minecraft.world.level.CardinalLighting;
 import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.timeline.Timeline;
@@ -39,21 +40,22 @@ public final class PresetDimensionTypes {
 			.build();
 
         ctx.register(BuiltinDimensionTypes.OVERWORLD, new DimensionType(
-        	false, // hasFixedTime (false = time progresses normally)
-        	true,  // hasSkyLight (true = overworld has sky light)
-        	false, // hasCeiling
-        	1.0,   // coordinateScale
-        	-worldDepth,   // minY
-        	totalHeight,   // height
-        	totalHeight,   // logicalHeight
-        	BlockTags.INFINIBURN_OVERWORLD, // infiniburn
-        	0.0f,  // ambientLight
-			// this is so ass man, the world was black
-        	new DimensionType.MonsterSettings(UniformInt.of(0, 7), 0),
-        	DimensionType.Skybox.OVERWORLD,
-        	DimensionType.CardinalLightType.DEFAULT,
-        	attributes,
-        	timelines.getOrThrow(TimelineTags.IN_OVERWORLD)
+	false, // hasFixedTime
+	true,  // hasSkyLight
+	false, // hasCeiling
+	false, // ultraWarm
+	1.0,   // coordinateScale
+	-worldDepth,   // minY
+	totalHeight,   // height
+	totalHeight,   // logicalHeight
+	BlockTags.INFINIBURN_OVERWORLD, // infiniburn
+	0.0f,  // ambientLight
+	new DimensionType.MonsterSettings(UniformInt.of(0, 7), 0),
+	DimensionType.Skybox.OVERWORLD,
+	CardinalLighting.Type.DEFAULT,
+	attributes,
+	timelines.getOrThrow(TimelineTags.IN_OVERWORLD),
+	java.util.Optional.empty() // worldClock
         ));
 	}
 }

@@ -23,7 +23,7 @@ import net.minecraft.world.level.chunk.LightChunkGetter;
 import net.minecraft.world.level.entity.ChunkStatusUpdateListener;
 import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
-import net.minecraft.world.level.storage.DimensionDataStorage;
+import net.minecraft.world.level.storage.SavedDataStorage;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import raccoonman.reterraforged.world.worldgen.RTFRandomState;
 
@@ -37,7 +37,7 @@ public class MixinChunkMap {
 		at = @At("TAIL"),
 		method = "<init>"
 	)
-	public void ChunkMap(ServerLevel serverLevel, LevelStorageSource.LevelStorageAccess levelStorageAccess, DataFixer dataFixer, StructureTemplateManager structureTemplateManager, Executor executor, BlockableEventLoop blockableEventLoop, LightChunkGetter lightChunkGetter, ChunkGenerator chunkGenerator, ChunkStatusUpdateListener chunkStatusUpdateListener, Supplier supplier, TicketStorage ticketStorage, int i, boolean bl, CallbackInfo ci) {
+	public void ChunkMap(ServerLevel serverLevel, LevelStorageSource.LevelStorageAccess levelStorageAccess, DataFixer dataFixer, StructureTemplateManager structureTemplateManager, Executor executor, BlockableEventLoop blockableEventLoop, LightChunkGetter lightChunkGetter, ChunkGenerator chunkGenerator, ChunkStatusUpdateListener chunkStatusUpdateListener, Supplier<SavedDataStorage> supplier, TicketStorage ticketStorage, int i, boolean bl, CallbackInfo ci) {
 		if((Object) this.randomState instanceof RTFRandomState rtfRandomState) {
 			rtfRandomState.initialize(serverLevel.registryAccess());
 		}

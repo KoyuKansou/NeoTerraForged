@@ -55,9 +55,11 @@ public class TileCache implements TileFactory {
 	@Override
 	public void drop(int tileX, int tileZ) {
 		long packedTilePos = PosUtil.pack(tileX, tileZ);
-		//TODO i dont think get should be able to return null here
 		CacheEntry<Entry> entry = this.cache.get(packedTilePos);
-		if(entry != null && entry.get().drop()) {
+		if(entry == null) {
+			return;
+		}
+		if(entry.get().drop()) {
 			this.cache.remove(packedTilePos);
 		}
 	}

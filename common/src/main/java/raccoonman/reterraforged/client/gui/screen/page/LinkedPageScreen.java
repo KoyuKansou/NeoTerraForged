@@ -2,7 +2,7 @@ package raccoonman.reterraforged.client.gui.screen.page;
 
 import java.util.Optional;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
@@ -67,9 +67,8 @@ public abstract class LinkedPageScreen extends Screen {
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		//super.renderBackground(guiGraphics, mouseY, mouseY, partialTicks);
-		super.render(guiGraphics, mouseX, mouseY, partialTicks);
+	public void extractRenderState(GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, float partialTicks) {
+		super.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTicks);
 	}
 	
 	@Override

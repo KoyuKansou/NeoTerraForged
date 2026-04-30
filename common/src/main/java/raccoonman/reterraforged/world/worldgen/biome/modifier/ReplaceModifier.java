@@ -1,4 +1,4 @@
-package raccoonman.reterraforged.world.worldgen.biome.modifier.fabric;
+package raccoonman.reterraforged.world.worldgen.biome.modifier;
 
 import java.util.Map;
 import java.util.Optional;
@@ -38,12 +38,10 @@ record ReplaceModifier(GenerationStep.Decoration step, Optional<HolderSet<Biome>
 		
 			genSettings.removeFeature(this.step, oldKey);
 			
-
 			Optional<ResourceKey<PlacedFeature>> newKey = newHolder.unwrapKey();
 			if (newKey.isPresent()) {
 				genSettings.addFeature(this.step, newKey.get());
 			}
-
 		}
 	}
 

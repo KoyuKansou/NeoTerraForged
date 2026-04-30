@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import dev.architectury.injectables.annotations.ExpectPlatform;
+import net.fabricmc.loader.api.FabricLoader;
 import raccoonman.reterraforged.RTFCommon;
 
 public class ConfigUtil {
@@ -19,9 +19,8 @@ public class ConfigUtil {
 		return LEGACY_CONFIG_PATH.resolve(path);
 	}
 	
-	@ExpectPlatform
 	public static Path getConfigPath() {
-		throw new IllegalStateException();
+		return FabricLoader.getInstance().getConfigDir();
 	}
 	
 	static {

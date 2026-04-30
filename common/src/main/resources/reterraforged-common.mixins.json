@@ -1,11 +1,11 @@
 {
   
-  	"required": true,
-  	"plugin": "raccoonman.reterraforged.mixin.plugin.MixinPlugin",
-  	"package": "raccoonman.reterraforged.mixin",
-  	"minVersion": "0.8",
-  	"compatibilityLevel": "JAVA_21",
-  	"mixins": [
+	"required": true,
+	"plugin": "raccoonman.reterraforged.mixin.plugin.MixinPlugin",
+	"package": "raccoonman.reterraforged.mixin",
+	"minVersion": "0.8",
+	"compatibilityLevel": "JAVA_25",
+	"mixins": [
 		"MixinNoiseChunk",
 		"MixinRandomState",
 		"MixinChunkMap",
@@ -21,11 +21,11 @@
 		"terrablender.MixinClimateSampler",
 		"terrablender.MixinTargetPoint",
 		"terrablender.MixinNoiseChunk"
-  	],
-  	"client": [
+	],
+	"client": [
 		"ScreenInvoker"
-  	],
-  	"injectors": {
+	],
+	"injectors": {
 		"defaultRequire": 1
-  	}
+	}
 }

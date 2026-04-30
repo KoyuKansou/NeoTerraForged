@@ -24,14 +24,6 @@ public class BiomeModifiersImpl {
 	public static void bootstrap() {
 		register("add", AddModifier.CODEC);
 		register("replace", ReplaceModifier.CODEC);
-		
-		//prevent forge biome modifiers from being loaded
-		//FIXME this is a bad way to do this 
-		register("forge:none", Dummy.makeCodec());
-		register("forge:add_features", Dummy.makeCodec());
-		register("forge:remove_features", Dummy.makeCodec());
-		register("forge:add_spawns", Dummy.makeCodec());
-		register("forge:remove_spawns", Dummy.makeCodec());
 	}
 	
 	public static BiomeModifier add(Order order, GenerationStep.Decoration step, Optional<Pair<Filter.Behavior, HolderSet<Biome>>> biomes, HolderSet<PlacedFeature> features) {
@@ -46,15 +38,4 @@ public class BiomeModifiersImpl {
 		RegistryUtil.register(RTFBuiltInRegistries.BIOME_MODIFIER_TYPE, name, value);
 	}
 
-	private record Dummy() implements BiomeModifier	{
-		
-		@Override
-		public MapCodec<Dummy> codec() {
-			return makeCodec();
-		}
-		
-		public static MapCodec<Dummy> makeCodec() {
-			return MapCodec.unit(Dummy::new);
-		}
-	};
 }

@@ -1,4 +1,4 @@
-package raccoonman.reterraforged.world.worldgen.biome.modifier.fabric;
+package raccoonman.reterraforged.world.worldgen.biome.modifier;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -12,13 +12,13 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.world.level.biome.BiomeGenerationSettings;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import raccoonman.reterraforged.mixin.MixinBiomeGenerationSettings;
-import raccoonman.reterraforged.world.worldgen.biome.modifier.BiomeModifier;
 
 public interface FabricBiomeModifier extends BiomeModifier {
 	void apply(BiomeSelectionContext selectionContext, BiomeModificationContext modificationContext);
-
+	
 	default void rebuildFlowerFeatures(BiomeGenerationSettings generationSettings) {
 		if(generationSettings instanceof MixinBiomeGenerationSettings biomeGenerationSettings) {
 			Supplier<List<ConfiguredFeature<?, ?>>> supplier = () -> {

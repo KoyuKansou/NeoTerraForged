@@ -148,7 +148,7 @@ public record CellSampler(Supplier<WorldLookup> deferredLookup, Field field) imp
 					return NoiseUtil.lerp(Continentalness.OCEAN.min(), Continentalness.OCEAN.max(), alpha);
 				}
 				
-				if(cell.terrain.getDelegate() == TerrainCategory.BEACH && cell.height + cell.beachNoise < levels.water(5)) {
+				if(cell.terrain.getDelegate() == TerrainCategory.BEACH && cell.height < levels.water(5)) {
 					float alpha = NoiseUtil.clamp(cell.continentEdge, shallowOcean, beach);
 					alpha = NoiseUtil.lerp(alpha, shallowOcean, beach, 0.0F, 1.0F);
 					return NoiseUtil.lerp(Continentalness.COAST.min(), Continentalness.COAST.max(), alpha);

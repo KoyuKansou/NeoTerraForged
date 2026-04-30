@@ -1,18 +1,20 @@
 package raccoonman.reterraforged.data.worldgen;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import net.minecraft.core.Cloner;
-import net.minecraft.SharedConstants;
+
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataGenerator.PackGenerator;
-import net.minecraft.data.PackOutput;
 import net.minecraft.data.metadata.PackMetadataGenerator;
 import net.minecraft.data.worldgen.features.FeatureUtils;
 import net.minecraft.network.chat.Component;
@@ -32,10 +34,29 @@ import raccoonman.reterraforged.world.worldgen.noise.module.Noise;
 import raccoonman.reterraforged.world.worldgen.structure.rule.StructureRule;
 
 public class Datapacks {
+	private static DataGenerator createRuntimeDataGenerator(Path outputPath) {
+		return new DataGenerator(outputPath) {
+			@Override
+			public void run() throws IOException {
+				try {
+					CompletableFuture.allOf(this.providersToRun.values().stream()
+						.map((provider) -> provider.run(CachedOutput.NO_CACHE))
+						.toArray(CompletableFuture[]::new)
+					).join();
+				} catch(CompletionException e) {
+					Throwable cause = e.getCause();
+					if(cause instanceof IOException ioException) {
+						throw ioException;
+					}
+					throw new IOException("Failed to generate runtime datapack", cause);
+				}
+			}
+		};
+	}
 
 	public static DataGenerator makeMudSwamps(RegistryAccess registryAccess, Path dataGenPath, Path dataGenOutputPath) {
-		DataGenerator dataGenerator = new DataGenerator(dataGenPath, SharedConstants.getCurrentVersion(), true);
-		PackGenerator packGenerator = dataGenerator.new PackGenerator(true, "Mud Swamps", new PackOutput(dataGenOutputPath));
+		DataGenerator dataGenerator = createRuntimeDataGenerator(dataGenOutputPath);
+		PackGenerator packGenerator = dataGenerator.getVanillaPack(true);
 		CompletableFuture<HolderLookup.Provider> lookup = CompletableFuture.supplyAsync(() -> {
 			RegistrySetBuilder builder = new RegistrySetBuilder();
 			builder.add(Registries.CONFIGURED_FEATURE, (ctx) -> {
@@ -59,8 +80,8 @@ public class Datapacks {
 	}
 
 	public static DataGenerator makePreset(Preset preset, RegistryAccess registryAccess, Path dataGenPath, Path dataGenOutputPath, String presetName) {
-		DataGenerator dataGenerator = new DataGenerator(dataGenPath, SharedConstants.getCurrentVersion(), true);
-		PackGenerator packGenerator = dataGenerator.new PackGenerator(true, presetName, new PackOutput(dataGenOutputPath));
+		DataGenerator dataGenerator = createRuntimeDataGenerator(dataGenOutputPath);
+		PackGenerator packGenerator = dataGenerator.getVanillaPack(true);
 		CompletableFuture<HolderLookup.Provider> lookup = CompletableFuture.supplyAsync(() -> preset.buildPatch(registryAccess));
 		
 		packGenerator.addProvider((output) -> {

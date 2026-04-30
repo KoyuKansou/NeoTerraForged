@@ -13,6 +13,7 @@ public class RTFFeatures {
 	public static final Feature<BushFeature.Config> BUSH = register("bush", new BushFeature(BushFeature.Config.CODEC));
 	public static final Feature<DiskConfiguration> DISK = register("disk", new DiskFeature(DiskConfiguration.CODEC));
 	public static final Feature<ChanceFeature.Config> CHANCE = register("chance", new ChanceFeature(ChanceFeature.Config.CODEC));
+	public static final Feature<RTFRandomPatchFeature.Config> RANDOM_PATCH = register("random_patch", new RTFRandomPatchFeature(RTFRandomPatchFeature.Config.CODEC));
 	public static final Feature<ErodeFeature.Config> ERODE = register("erode", new ErodeFeature(ErodeFeature.Config.CODEC));
 	public static final Feature<DecorateSnowFeature.Config> DECORATE_SNOW = register("decorate_snow", new DecorateSnowFeature(DecorateSnowFeature.Config.CODEC));
 	public static final Feature<SwampSurfaceFeature.Config> SWAMP_SURFACE = register("swamp_surface", new SwampSurfaceFeature(SwampSurfaceFeature.Config.CODEC));

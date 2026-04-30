@@ -4,10 +4,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.Codec;
-
 import com.mojang.serialization.MapCodec;
-import dev.architectury.injectables.annotations.ExpectPlatform;
+
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.resources.ResourceKey;
@@ -17,11 +15,12 @@ import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import raccoonman.reterraforged.platform.RegistryUtil;
 import raccoonman.reterraforged.registries.RTFBuiltInRegistries;
 
+
 public class BiomeModifiers {
-	
-	@ExpectPlatform
+
 	public static void bootstrap() {
-		throw new UnsupportedOperationException();
+		register("add", AddModifier.CODEC);
+		register("replace", ReplaceModifier.CODEC);
 	}
 
 	@SafeVarargs
@@ -42,9 +41,8 @@ public class BiomeModifiers {
 		return add(order, step, Optional.of(Pair.of(filterBehavior, biomes)), features);
 	}
 	
-	@ExpectPlatform
 	public static BiomeModifier add(Order order, GenerationStep.Decoration step, Optional<Pair<Filter.Behavior, HolderSet<Biome>>> biomes, HolderSet<PlacedFeature> features) {
-		throw new UnsupportedOperationException();
+		return new AddModifier(order, step, biomes.map((p) -> new Filter(p.getSecond(), p.getFirst())), features);
 	}
 
 	public static BiomeModifier replace(GenerationStep.Decoration step, Map<ResourceKey<PlacedFeature>, Holder<PlacedFeature>> replacements) {
@@ -55,9 +53,8 @@ public class BiomeModifiers {
 		return replace(step, Optional.of(biomes), replacements);
 	}
 	
-	@ExpectPlatform
 	public static BiomeModifier replace(GenerationStep.Decoration step, Optional<HolderSet<Biome>> biomes, Map<ResourceKey<PlacedFeature>, Holder<PlacedFeature>> replacements) {
-		throw new UnsupportedOperationException();
+		return new ReplaceModifier(step, biomes, replacements);
 	}
 
 	public static void register(String name, MapCodec<? extends BiomeModifier> value) {

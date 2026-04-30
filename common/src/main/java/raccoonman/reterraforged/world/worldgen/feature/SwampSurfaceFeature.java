@@ -33,7 +33,7 @@ public class SwampSurfaceFeature extends Feature<Config> {
 	public boolean place(FeaturePlaceContext<Config> ctx) {
 		Config config = ctx.config();
 		BlockPos origin = ctx.origin();
-		ChunkPos chunkPos = new ChunkPos(origin);
+		ChunkPos chunkPos = new ChunkPos(origin.getX() >> 4, origin.getZ() >> 4);
 		ChunkAccess chunk = ctx.level().getChunk(origin);
 		ChunkGenerator generator = ctx.chunkGenerator();
 		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();

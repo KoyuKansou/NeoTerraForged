@@ -13,7 +13,7 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.GrassBlock;
 import net.minecraft.world.level.block.SnowLayerBlock;
-import net.minecraft.world.level.block.SpreadingSnowyDirtBlock;
+import net.minecraft.world.level.block.SpreadingSnowyBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -52,8 +52,8 @@ public class DecorateSnowFeature extends Feature<Config> {
 		@Nullable
 		GeneratorContext generatorContext;
 		if((Object) randomState instanceof RTFRandomState rtfRandomState && (generatorContext = rtfRandomState.generatorContext()) != null) {
-			ChunkGenerator generator = placeContext.chunkGenerator();
-			ChunkPos chunkPos = new ChunkPos(placeContext.origin());
+			BlockPos origin = placeContext.origin();
+			ChunkPos chunkPos = new ChunkPos(origin.getX() >> 4, origin.getZ() >> 4);
 			int chunkX = chunkPos.x;
 			int chunkZ = chunkPos.z;
 			ChunkAccess chunk = level.getChunk(chunkX, chunkZ);
@@ -70,7 +70,7 @@ public class DecorateSnowFeature extends Feature<Config> {
 		        	Cell cell = tileChunk.getCell(x, z);
 					int scaledY = levels.scale(cell.height);
 			        int surfaceY = chunk.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
-			        if(scaledY == surfaceY && scaledY >= generator.getSeaLevel()) {
+			        if(scaledY == surfaceY && scaledY >= level.getLevel().getChunkSource().getGenerator().getSeaLevel()) {
 		        		int worldX = chunkPos.getBlockX(x);
 		        		int worldZ = chunkPos.getBlockZ(z);
 				        pos.set(worldX, surfaceY, worldZ);
@@ -159,7 +159,7 @@ public class DecorateSnowFeature extends Feature<Config> {
 
             // Turns to dirt if submerged or the light-level is low. Light hasn't been calc'd at this
             // at this stage of world-gen so just blanket set everything to snowy dirt.
-            if (below.getBlock() instanceof SpreadingSnowyDirtBlock) {
+            if (below.getBlock() instanceof SpreadingSnowyBlock) {
                 chunk.setBlockState(pos1, Blocks.DIRT.defaultBlockState());
             }
         }

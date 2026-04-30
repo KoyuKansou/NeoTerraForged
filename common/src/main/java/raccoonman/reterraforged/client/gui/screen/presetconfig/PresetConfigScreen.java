@@ -76,22 +76,28 @@ public class PresetConfigScreen extends LinkedPageScreen {
 
 		Preset preset = presetEntry.getPreset();
 		Component presetName = presetEntry.getName();
-		
-		DataGenerator dataGenerator = Datapacks.makePreset(preset, registryAccess, datagenPath, datagenOutputPath, presetName.getString());
-		dataGenerator.run();
-		copyToZip(datagenOutputPath, outputPath);
-		PathUtils.deleteDirectory(datagenPath);
-		
-		RTFCommon.LOGGER.info("Exported datapack to {}", outputPath);
+
+		try {
+			DataGenerator dataGenerator = Datapacks.makePreset(preset, registryAccess, datagenPath, datagenOutputPath, presetName.getString());
+			dataGenerator.run();
+			if(!Files.isRegularFile(datagenOutputPath.resolve("pack.mcmeta"))) {
+				throw new IOException("Generated datapack is missing pack.mcmeta: " + datagenOutputPath);
+			}
+			copyToZip(datagenOutputPath, outputPath);
+
+			RTFCommon.LOGGER.info("Exported datapack to {}", outputPath);
+		} finally {
+			PathUtils.deleteDirectory(datagenPath);
+		}
 	}
 	
-	private static void copyToZip(Path input, Path output) {
+	private static void copyToZip(Path input, Path output) throws IOException {
 		Map<String, String> env = ImmutableMap.of("create", "true");
 	    URI uri = URI.create("jar:" + output.toUri());
+	    Files.createDirectories(output.getParent());
+	    Files.deleteIfExists(output);
 	    try (FileSystem fs = FileSystems.newFileSystem(uri, env)) {
 	        PathUtils.copyDirectory(input, fs.getPath("/"), StandardCopyOption.REPLACE_EXISTING);
-	    } catch (IOException e) {
-	        e.printStackTrace();
 	    }
 	}
 }

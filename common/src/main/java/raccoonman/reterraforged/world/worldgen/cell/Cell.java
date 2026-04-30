@@ -45,8 +45,6 @@ public class Cell {
     public float temperature;
     public float moisture;
     
-    @Deprecated(forRemoval = true)
-    public float beachNoise;
 
     public Cell() {
         this.regionMoisture = 0.5F;
@@ -83,7 +81,6 @@ public class Cell {
         this.weirdness = other.weirdness;
         this.temperature = other.temperature;
         this.moisture = other.moisture;
-        this.beachNoise = other.beachNoise;
     }
 
     public Cell reset() {

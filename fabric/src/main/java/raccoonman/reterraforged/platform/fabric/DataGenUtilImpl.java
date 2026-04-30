@@ -34,7 +34,6 @@ public class DataGenUtilImpl {
 		return new Provider(output, providerLookup);
 	}
 
-	// a port of the forge patches to RegistriesDatapackGenerator
 	private static class Provider implements DataProvider {
 	    private static final Logger LOGGER = LogUtils.getLogger();
 	    private final PackOutput output;

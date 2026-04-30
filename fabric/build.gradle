@@ -1,43 +1,35 @@
-plugins {
-    id "com.github.johnrengelman.shadow" version "8.1.1"
-}
-
-architectury {
-    platformSetupLoomIde()
-    fabric()
-}
-
 loom {
     accessWidenerPath = project(":common").loom.accessWidenerPath
-    
+
     runs {
-	    data {
+        data {
             inherit client
-            
+
             vmArg "-Dfabric-api.datagen"
             vmArg "-Dfabric-api.datagen.output-dir=${file("src/main/generated")}"
             vmArg "-Dfabric-api.datagen.modid=reterraforged"
- 
+
             runDir "build/datagen"
         }
     }
 }
 
 configurations {
-    common
-    shadowCommon
-    compileClasspath.extendsFrom common
-    runtimeClasspath.extendsFrom common
-    developmentFabric.extendsFrom common
+    commonCompile
+    commonRuntime
+    compileClasspath.extendsFrom commonCompile
+    runtimeClasspath.extendsFrom commonRuntime
 }
 
 dependencies {
-    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
-    modApi("net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}") { exclude group: 'net.fabricmc', module: 'fabric-loader' }
-// 	modImplementation("com.github.glitchfiend:TerraBlender-fabric:${rootProject.minecraft_version}-${rootProject.terrablender_version}")
-    
-    common(project(path: ":common", configuration: "namedElements")) { transitive false }
-    shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
+    implementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+    implementation("net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}") {
+        exclude group: 'net.fabricmc', module: 'fabric-loader'
+    }
+    runtimeOnly "curse.maven:terrablender-fabric-565956:7834072"
+
+    commonCompile(project(path: ":common", configuration: "apiElements")) { transitive false }
+    commonRuntime(project(path: ":common", configuration: "runtimeElements")) { transitive false }
 }
 
 sourceSets {
@@ -50,6 +42,10 @@ sourceSets {
     }
 }
 
+repositories {
+    maven { url "https://maven.glitchfiend.com/public" }
+}
+
 processResources {
     inputs.property "version", project.version
 
@@ -58,32 +54,17 @@ processResources {
     }
 }
 
-shadowJar {
-    exclude "architectury.common.json"
-
-    configurations = [project.configurations.shadowCommon]
-    archiveClassifier.set("dev-shadow")
-}
-
-remapJar {
-    injectAccessWidener = true
-    input.set shadowJar.archiveFile
-    dependsOn shadowJar
-    archiveClassifier.set("fabric-${rootProject.minecraft_version}")
-}
-
 jar {
-    archiveClassifier.set("dev")
+    archiveClassifier = "fabric-${rootProject.minecraft_version}"
+    dependsOn project(":common").tasks.named("classes")
+    from(project(":common").sourceSets.main.output)
 }
 
 sourcesJar {
     def commonSources = project(":common").sourcesJar
     dependsOn commonSources
     from commonSources.archiveFile.map { zipTree(it) }
-}
-
-components.java {
-    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
-        skip()
-    }
+    exclude "fabric.mod.json"
+    exclude "*.mixins.json"
+    exclude "*.accesswidener"
 }

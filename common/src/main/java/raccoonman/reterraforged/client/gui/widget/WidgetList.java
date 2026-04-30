@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -67,7 +67,7 @@ public class WidgetList<T extends AbstractWidget> extends ContainerObjectSelecti
         }
 
         @Override
-        public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovered, float partialTicks) {
+        public void extractContent(GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, boolean hovered, float partialTicks) {
             // this shit took me so much time when doing manually
             int left = this.getX();
             int top = this.getY();
@@ -83,7 +83,7 @@ public class WidgetList<T extends AbstractWidget> extends ContainerObjectSelecti
             if(widget instanceof PresetEditorPage.Preview preview) {
             	widget.setHeight(widget.getWidth());
             }
-            widget.render(guiGraphics, mouseX, mouseY, partialTicks);
+            widget.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTicks);
         }
 
 		@Override

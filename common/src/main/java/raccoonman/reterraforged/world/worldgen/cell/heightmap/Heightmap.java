@@ -33,7 +33,7 @@ import raccoonman.reterraforged.world.worldgen.noise.module.Noise;
 import raccoonman.reterraforged.world.worldgen.noise.module.Noises;
 import raccoonman.reterraforged.world.worldgen.util.Seed;
 
-public record Heightmap(CellPopulator terrain, CellPopulator region, Continent continent, Climate climate, Levels levels, ControlPoints controlPoints, float terrainFrequency, Noise beachNoise) {
+public record Heightmap(CellPopulator terrain, CellPopulator region, Continent continent, Climate climate, Levels levels, ControlPoints controlPoints, float terrainFrequency) {
 	
 	public void apply(Cell cell, float x, float z, boolean applyClimate) {
 		this.applyTerrain(cell, x, z);
@@ -43,7 +43,6 @@ public record Heightmap(CellPopulator terrain, CellPopulator region, Continent c
 	
 	public void applyTerrain(Cell cell, float x, float z) {
         cell.terrain = TerrainType.FLATS;
-        cell.beachNoise = this.beachNoise.compute(x, z, 0);
         this.continent.apply(cell, x, z);
         this.region.apply(cell, x, z);
         this.terrain.apply(cell, x * this.terrainFrequency, z * this.terrainFrequency);
@@ -134,9 +133,7 @@ public record Heightmap(CellPopulator terrain, CellPopulator region, Continent c
         CellPopulator oceans = new ContinentLerper3(deepOcean, shallowOcean, coast, controlPoints.deepOcean, controlPoints.shallowOcean, controlPoints.coast);
         CellPopulator terrain = new ContinentLerper2(oceans, land, controlPoints.shallowOcean, controlPoints.inland);
 
-        Noise beachNoise = Noises.perlin2(ctx.seed.next(), 20, 1);
-        beachNoise = Noises.mul(beachNoise, ctx.levels.scale(5));
-        return new Heightmap(terrain, region, continent, climate, levels, controlPoints, terrainFrequency, beachNoise);
+        return new Heightmap(terrain, region, continent, climate, levels, controlPoints, terrainFrequency);
 	}
 	
 	private static CellPopulator makeIslandPopulator(GeneratorContext ctx, ControlPoints controlPoints, CellPopulator oceans) {

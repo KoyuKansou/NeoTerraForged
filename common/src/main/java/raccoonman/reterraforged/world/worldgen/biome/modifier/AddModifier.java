@@ -1,4 +1,4 @@
-package raccoonman.reterraforged.world.worldgen.biome.modifier.fabric;
+package raccoonman.reterraforged.world.worldgen.biome.modifier;
 
 import java.util.Optional;
 
@@ -12,8 +12,6 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
-import raccoonman.reterraforged.world.worldgen.biome.modifier.Filter;
-import raccoonman.reterraforged.world.worldgen.biome.modifier.Order;
 
 record AddModifier(Order order, GenerationStep.Decoration step, Optional<Filter> biomes, HolderSet<PlacedFeature> features) implements FabricBiomeModifier {
 	public static final MapCodec<AddModifier> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
