@@ -1,7 +1,7 @@
 # ReTerraForged
 a 1.19+ continuation of https://github.com/TerraForged/TerraForged
 
-Now updated to 1.21.11
+Now unofficially updated to 1.21.11
 
 # DISCLAIMER
 
